@@ -1,70 +1,189 @@
-# Getting Started with Create React App
+# Web App Tạo Đề Thi Trắc Nghiệm
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Ứng dụng web tạo và quản lý đề thi trắc nghiệm với giao diện thân thiện và kiến trúc MVC.
 
-## Available Scripts
+## 🚀 Tính năng chính
 
-In the project directory, you can run:
+### 📚 **Tab Subject (Chủ đề)**
+- ✅ Thêm, sửa, xóa chủ đề
+- ✅ Giao diện sticky header không bị cuộn
+- ✅ Popup xác nhận xóa đẹp mắt
+- ✅ Tích hợp API backend
+- ✅ Kiến trúc MVC (Model-View-Controller)
+
+### ❓ **Tab Question (Câu hỏi)**
+- ✅ Tạo câu hỏi trắc nghiệm với 4 lựa chọn (A, B, C, D)
+- ✅ Chọn đáp án đúng bằng radio button
+- ✅ Liên kết câu hỏi với chủ đề
+- ✅ Popup chọn chủ đề từ danh sách
+- ✅ Scroll và highlight câu hỏi sau khi cập nhật
+- ✅ Tích hợp API backend
+- ✅ Lưu trữ local cho Exam
+
+### 📝 **Tab Exam (Đề thi)**
+- ✅ Tạo đề thi từ các câu hỏi đã có
+- ✅ Lọc câu hỏi theo chủ đề
+- ✅ Chọn nhiều câu hỏi cho đề thi
+- ✅ Thiết lập thời gian làm bài (giây)
+- ✅ Lưu trữ local
+
+## 🏗️ Kiến trúc dự án
+
+### **MVC Pattern**
+```
+src/
+├── models/           # Data models
+│   ├── Subject.js
+│   ├── Question.js
+│   └── Exam.js
+├── views/            # UI components
+│   └── SubjectView.js
+├── controllers/      # Business logic
+│   └── SubjectController.js
+├── services/         # API calls
+│   ├── SubjectService.js
+│   ├── QuestionService.js
+│   └── ExamService.js
+└── components/       # React components
+    ├── QuestionTab.js
+    └── ExamTab.js
+```
+
+### **API Integration**
+- **Subject API**: `http://localhost:8080/api/subject/`
+  - `GET /get_subjects` - Lấy danh sách chủ đề
+  - `POST /add_subject` - Thêm chủ đề mới
+  - `PUT /update` - Cập nhật chủ đề
+  - `DELETE /delete/{id}` - Xóa chủ đề
+
+- **Question API**: `http://localhost:8080/api/question/`
+  - `GET /get_questions` - Lấy danh sách câu hỏi
+  - `POST /add_question` - Thêm câu hỏi mới
+  - `PUT /update` - Cập nhật câu hỏi
+
+## 🎨 Giao diện người dùng
+
+### **UI/UX Features**
+- 🎯 **Sticky Navigation**: Header và tabs cố định khi cuộn
+- 🎨 **Modern Design**: Gradient backgrounds, card layouts
+- ⚡ **Smooth Animations**: Scroll mượt mà, highlight effects
+- 📱 **Responsive**: Tương thích mobile và desktop
+- 🎭 **Custom Popups**: Popup xác nhận xóa đẹp mắt
+- 🔄 **Loading States**: Hiển thị trạng thái loading
+- ❌ **Error Handling**: Xử lý lỗi thân thiện
+
+### **Visual Effects**
+- ✨ **Highlight Animation**: Câu hỏi được cập nhật sẽ highlight 2 giây
+- 🎯 **Auto Scroll**: Tự động cuộn đến item vừa cập nhật
+- 🎨 **Hover Effects**: Hiệu ứng hover cho buttons và cards
+- 🌈 **Color Coding**: Màu sắc phân biệt các trạng thái
+
+## 🛠️ Cài đặt và chạy
+
+### **Yêu cầu hệ thống**
+- Node.js >= 14.0.0
+- npm >= 6.0.0
+- Backend API chạy trên `http://localhost:8080`
+
+### **Cài đặt**
+```bash
+# Clone repository
+git clone <repository-url>
+cd test-practice
+
+# Cài đặt dependencies
+npm install
+
+# Chạy ứng dụng
+npm start
+```
+
+### **Truy cập ứng dụng**
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:8080`
+
+## 📋 Scripts có sẵn
 
 ### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Chạy ứng dụng ở chế độ development.\
+Mở [http://localhost:3000](http://localhost:3000) để xem trong trình duyệt.
 
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Chạy test runner ở chế độ interactive watch mode.
 
 ### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Build ứng dụng cho production vào thư mục `build`.\
+Ứng dụng được tối ưu hóa cho performance tốt nhất.
 
 ### `npm run eject`
+**Lưu ý: Đây là thao tác một chiều. Một khi `eject`, bạn không thể quay lại!**
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## 🔧 Cấu hình API
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### **Subject API Format**
+```javascript
+// GET /get_subjects
+{
+  "data": [
+    { "id": 1, "nameSubject": "Toán" },
+    { "id": 2, "nameSubject": "Tiếng Anh" }
+  ],
+  "message": "Success",
+  "status": 200
+}
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+// POST /add_subject
+Body: { "name_subject": "Vật Lí" }
+Response: { "data": [...], "message": "Subject added successfully" }
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### **Question API Format**
+```javascript
+// GET /get_questions
+{
+  "data": [
+    {
+      "id": 1,
+      "subject": { "id": 1, "nameSubject": "Toán" },
+      "content": "Câu hỏi...",
+      "option_a": "A", "option_b": "B", "option_c": "C", "option_d": "D",
+      "correct_answer": 1  // 0=A, 1=B, 2=C, 3=D
+    }
+  ]
+}
 
-## Learn More
+// POST /add_question
+Body: {
+  "subject_id": 1,
+  "content": "Câu hỏi...",
+  "option_a": "A", "option_b": "B", "option_c": "C", "option_d": "D",
+  "correct_answer": 1
+}
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🎯 Tính năng nâng cao
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### **Data Persistence**
+- **Subjects**: Lưu trữ qua API backend
+- **Questions**: Lưu trữ qua API backend  
+- **Exams**: Lưu trữ local với localStorage
 
-### Code Splitting
+### **User Experience**
+- 🔄 **Real-time Updates**: Cập nhật dữ liệu real-time
+- 🎯 **Smart Navigation**: Tự động cuộn và highlight
+- ⚡ **Fast Loading**: Tối ưu hóa performance
+- 🎨 **Visual Feedback**: Phản hồi trực quan cho mọi thao tác
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## 📚 Học thêm
 
-### Analyzing the Bundle Size
+- [React Documentation](https://reactjs.org/)
+- [Create React App Documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [MVC Pattern](https://developer.mozilla.org/en-US/docs/Glossary/MVC)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🤝 Đóng góp
 
-### Making a Progressive Web App
+Mọi đóng góp đều được chào đón! Vui lòng tạo issue hoặc pull request.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## 📄 License
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Dự án này được phát hành dưới MIT License.
