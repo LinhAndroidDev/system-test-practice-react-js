@@ -5,16 +5,20 @@ class ExamService {
     this.baseUrl = 'http://localhost:8080/api/exam';
   }
 
-  // Get all exams
   async getExams() {
     try {
       const response = await fetch(`${this.baseUrl}/get_exams`);
-      const result = await response.json();
       
-      if (result.status === 200 && result.data) {
-        return result.data.map(item => Exam.fromApiResponse(item));
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.status === 200 && data.data) {
+        return data.data.map(examData => Exam.fromApiResponse(examData));
       } else {
-        throw new Error(result.message || 'Failed to fetch exams');
+        throw new Error(data.message || 'Failed to fetch exams');
       }
     } catch (error) {
       console.error('Error fetching exams:', error);
@@ -22,23 +26,36 @@ class ExamService {
     }
   }
 
-  // Create new exam
   async createExam(examData) {
     try {
-      const response = await fetch(`${this.baseUrl}/create`, {
+      // Convert questionIds array to string format for API
+      const questionsString = examData.questionIds.join(', ');
+      
+      const requestBody = {
+        subject_id: examData.subjectId,
+        title: examData.title,
+        duration_seconds: examData.durationSeconds,
+        questions: questionsString
+      };
+
+      const response = await fetch(`${this.baseUrl}/add_exam`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(examData.toApiFormat())
+        body: JSON.stringify(requestBody),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      const result = await response.json();
-      
-      if (result.status === 200) {
-        return Exam.fromApiResponse(result.data);
+      if (data.status === 200 && data.data) {
+        return data.data.map(examData => Exam.fromApiResponse(examData));
       } else {
-        throw new Error(result.message || 'Failed to create exam');
+        throw new Error(data.message || 'Failed to create exam');
       }
     } catch (error) {
       console.error('Error creating exam:', error);
@@ -46,23 +63,37 @@ class ExamService {
     }
   }
 
-  // Update exam
   async updateExam(id, examData) {
     try {
-      const response = await fetch(`${this.baseUrl}/update/${id}`, {
+      // Convert questionIds array to string format for API
+      const questionsString = examData.questionIds.join(', ');
+      
+      const requestBody = {
+        id: id,
+        subject_id: examData.subjectId,
+        title: examData.title,
+        duration_seconds: examData.durationSeconds,
+        questions: questionsString
+      };
+
+      const response = await fetch(`${this.baseUrl}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(examData.toApiFormat())
+        body: JSON.stringify(requestBody),
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      const result = await response.json();
-      
-      if (result.status === 200) {
-        return Exam.fromApiResponse(result.data);
+      if (data.status === 200 && data.data) {
+        return data.data.map(examData => Exam.fromApiResponse(examData));
       } else {
-        throw new Error(result.message || 'Failed to update exam');
+        throw new Error(data.message || 'Failed to update exam');
       }
     } catch (error) {
       console.error('Error updating exam:', error);
@@ -70,19 +101,22 @@ class ExamService {
     }
   }
 
-  // Delete exam
   async deleteExam(id) {
     try {
       const response = await fetch(`${this.baseUrl}/delete/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
       
-      const result = await response.json();
-      
-      if (result.status === 200) {
-        return true;
+      if (data.status === 200 && data.data) {
+        return data.data.map(examData => Exam.fromApiResponse(examData));
       } else {
-        throw new Error(result.message || 'Failed to delete exam');
+        throw new Error(data.message || 'Failed to delete exam');
       }
     } catch (error) {
       console.error('Error deleting exam:', error);

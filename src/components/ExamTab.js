@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SubjectService from '../services/SubjectService.js';
+import ExamService from '../services/ExamService.js';
 
 const ExamTab = ({ exams, setExams, questions }) => {
   const [subjects, setSubjects] = useState([]);
@@ -7,6 +8,8 @@ const ExamTab = ({ exams, setExams, questions }) => {
   const [editingId, setEditingId] = useState(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedQuestions, setSelectedQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     subjectId: "",
@@ -15,20 +18,33 @@ const ExamTab = ({ exams, setExams, questions }) => {
     questionIds: [],
   });
 
-  // Load subjects on component mount
+  // Load subjects and exams on component mount
   useEffect(() => {
-    const loadSubjects = async () => {
+    const loadData = async () => {
+      setLoading(true);
+      setError(null);
       try {
+        // Load subjects
         const subjectService = new SubjectService();
         const subjectsData = await subjectService.getSubjects();
         setSubjects(subjectsData);
+        
+        // Load exams
+        const examService = new ExamService();
+        const examsData = await examService.getExams();
+        setExams(examsData);
+        
+        setError(null);
       } catch (error) {
-        console.error('Error loading subjects:', error);
+        console.error('Error loading data:', error);
+        setError('Không thể tải dữ liệu từ server');
+      } finally {
+        setLoading(false);
       }
     };
     
-    loadSubjects();
-  }, []);
+    loadData();
+  }, [setExams]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +84,13 @@ const ExamTab = ({ exams, setExams, questions }) => {
     setSelectedQuestions([]);
   };
 
-  const handleSubmit = (e) => {
+  const handleOpenQuestionPopup = () => {
+    // Pre-select questions that are already in the form
+    setSelectedQuestions(formData.questionIds);
+    setShowQuestionPopup(true);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (
       !formData.name ||
@@ -79,33 +101,43 @@ const ExamTab = ({ exams, setExams, questions }) => {
       return;
     }
 
-    const newExam = {
-      id: editingId || Date.now(),
-      name: formData.name,
-      subjectId: parseInt(formData.subjectId),
-      subjectName: formData.subjectName,
-      timeLimit: parseInt(formData.timeLimit) || 0,
-      questionIds: formData.questionIds,
-      createdAt: editingId
-        ? exams.find((e) => e.id === editingId)?.createdAt
-        : new Date().toISOString(),
-    };
+    setLoading(true);
+    setError(null);
 
-    if (editingId) {
-      setExams(exams.map((exam) => (exam.id === editingId ? newExam : exam)));
-      setEditingId(null);
-    } else {
-      setExams([...exams, newExam]);
+    try {
+      const examService = new ExamService();
+      const examData = {
+        title: formData.name,
+        subjectId: parseInt(formData.subjectId),
+        subjectName: formData.subjectName,
+        durationSeconds: parseInt(formData.timeLimit) || 0,
+        questionIds: formData.questionIds,
+      };
+
+      let updatedExams;
+      if (editingId) {
+        updatedExams = await examService.updateExam(editingId, examData);
+        setEditingId(null);
+      } else {
+        updatedExams = await examService.createExam(examData);
+      }
+      setExams(updatedExams);
+
+      // Reset form after successful create/update
+      setFormData({
+        name: "",
+        subjectId: "",
+        subjectName: "",
+        timeLimit: "",
+        questionIds: [],
+      });
+      setSelectedSubjectId("");
+    } catch (error) {
+      console.error('Error processing exam:', error);
+      setError(editingId ? 'Không thể cập nhật đề thi. Vui lòng thử lại.' : 'Không thể tạo đề thi. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
     }
-
-    setFormData({
-      name: "",
-      subjectId: "",
-      subjectName: "",
-      timeLimit: "",
-      questionIds: [],
-    });
-    setSelectedSubjectId("");
   };
 
   const handleEditExam = (exam) => {
@@ -122,9 +154,21 @@ const ExamTab = ({ exams, setExams, questions }) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDeleteExam = (id) => {
+  const handleDeleteExam = async (id) => {
     if (window.confirm("Bạn có chắc chắn muốn xóa đề thi này?")) {
-      setExams(exams.filter((exam) => exam.id !== id));
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const examService = new ExamService();
+        const updatedExams = await examService.deleteExam(id);
+        setExams(updatedExams);
+      } catch (error) {
+        console.error('Error deleting exam:', error);
+        setError('Không thể xóa đề thi. Vui lòng thử lại.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -142,10 +186,16 @@ const ExamTab = ({ exams, setExams, questions }) => {
 
   const getFilteredQuestions = () => {
     if (!selectedSubjectId) return [];
+    
+    // Always use questions from Question tab (questions prop) to get all available questions
     return questions.filter((q) => q.subjectId === parseInt(selectedSubjectId));
   };
 
   const getExamQuestions = (exam) => {
+    // Use questions from exam object if available, otherwise fallback to filtering from questions prop
+    if (exam.questions && exam.questions.length > 0) {
+      return exam.questions;
+    }
     return questions.filter((q) => exam.questionIds.includes(q.id));
   };
 
@@ -169,6 +219,18 @@ const ExamTab = ({ exams, setExams, questions }) => {
         <h2>Quản lý đề thi</h2>
         <p>Tạo và quản lý các đề thi trắc nghiệm</p>
       </div>
+
+      {loading && (
+        <div className="loading-message">
+          Đang xử lý...
+        </div>
+      )}
+
+      {error && (
+        <div className="error-message">
+          ❌ {error}
+        </div>
+      )}
 
       <div className="add-exam-form">
         <h3>{editingId ? "Sửa đề thi" : "Thêm đề thi mới"}</h3>
@@ -251,7 +313,7 @@ const ExamTab = ({ exams, setExams, questions }) => {
             </div>
             <button
               type="button"
-              onClick={() => setShowQuestionPopup(true)}
+              onClick={handleOpenQuestionPopup}
               className="btn btn-outline"
               disabled={!formData.subjectId}
             >
@@ -260,14 +322,15 @@ const ExamTab = ({ exams, setExams, questions }) => {
           </div>
 
           <div className="form-actions">
-            <button type="submit" className="btn btn-primary">
-              {editingId ? "Cập nhật đề thi" : "Tạo đề thi"}
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? "Đang xử lý..." : (editingId ? "Cập nhật đề thi" : "Tạo đề thi")}
             </button>
             {editingId && (
               <button
                 type="button"
                 onClick={handleCancelEdit}
                 className="btn btn-secondary"
+                disabled={loading}
               >
                 Hủy
               </button>
@@ -331,12 +394,14 @@ const ExamTab = ({ exams, setExams, questions }) => {
                   <button
                     onClick={() => handleEditExam(exam)}
                     className="btn btn-warning btn-sm"
+                    disabled={loading}
                   >
                     Sửa
                   </button>
                   <button
                     onClick={() => handleDeleteExam(exam.id)}
                     className="btn btn-danger btn-sm"
+                    disabled={loading}
                   >
                     Xóa
                   </button>
