@@ -123,6 +123,13 @@ const QuestionTab = ({ questions, setQuestions }) => {
 
         const updatedQuestions = await questionService.createQuestion(questionData);
         setQuestions(updatedQuestions);
+        
+        // Find the newly created question (it should be the last one in the list)
+        const newQuestion = updatedQuestions[updatedQuestions.length - 1];
+        if (newQuestion) {
+          // Scroll to and highlight the newly created question
+          scrollToAndHighlightQuestion(newQuestion.id);
+        }
       }
 
       // Reset form after successful create/update
@@ -341,8 +348,9 @@ const QuestionTab = ({ questions, setQuestions }) => {
                     type="button"
                     onClick={() => setShowSubjectPopup(true)}
                     className="btn btn-secondary btn-sm"
+                    disabled={editingId}
                   >
-                    Thay đổi
+                    {editingId ? "Không thể thay đổi" : "Thay đổi"}
                   </button>
                 </div>
               ) : (
@@ -350,8 +358,9 @@ const QuestionTab = ({ questions, setQuestions }) => {
                   type="button"
                   onClick={() => setShowSubjectPopup(true)}
                   className="btn btn-outline"
+                  disabled={editingId}
                 >
-                  Chọn chủ đề
+                  {editingId ? "Không thể thay đổi chủ đề" : "Chọn chủ đề"}
                 </button>
               )}
             </div>

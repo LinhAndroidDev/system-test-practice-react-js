@@ -796,3 +796,38 @@ body {
     transform: scale(1.02);
   }
 }
+
+/* Exam Highlight Effect */
+.exam-card.highlighted {
+  animation: highlightPulse 2s ease-in-out;
+  border: 2px solid #4CAF50;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+}
+
+/* Disabled form elements */
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f8f9fa;
+}
+
+.form-text {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
+  font-style: italic;
+}
+
+.text-muted {
+  color: #6c757d;
+}
+
+.text-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}

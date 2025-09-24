@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from "react";
 import SubjectService from '../services/SubjectService.js';
 import ExamService from '../services/ExamService.js';
+import QuestionService from '../services/QuestionService.js';
 
-const ExamTab = ({ exams, setExams, questions }) => {
+const ExamTab = ({ exams, setExams, questions: propQuestions }) => {
   const [subjects, setSubjects] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [showQuestionPopup, setShowQuestionPopup] = useState(false);
+  const [showTimePopup, setShowTimePopup] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [selectedSubjectId, setSelectedSubjectId] = useState("");
   const [selectedQuestions, setSelectedQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [highlightedExamId, setHighlightedExamId] = useState(null);
+  const [customTimeInput, setCustomTimeInput] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     subjectId: "",
     subjectName: "",
     timeLimit: "",
+    customTimeLimit: "",
     questionIds: [],
   });
 
-  // Load subjects and exams on component mount
+  // Load subjects, exams, and questions on component mount
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -34,6 +40,11 @@ const ExamTab = ({ exams, setExams, questions }) => {
         const examsData = await examService.getExams();
         setExams(examsData);
         
+        // Load questions from API
+        const questionService = new QuestionService();
+        const questionsData = await questionService.getQuestions();
+        setQuestions(questionsData);
+        
         setError(null);
       } catch (error) {
         console.error('Error loading data:', error);
@@ -44,10 +55,16 @@ const ExamTab = ({ exams, setExams, questions }) => {
     };
     
     loadData();
-  }, [setExams]);
+  }, [setExams, setQuestions]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    if (name === 'timeLimit' && value === 'custom') {
+      setShowTimePopup(true);
+      return;
+    }
+    
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -90,6 +107,28 @@ const ExamTab = ({ exams, setExams, questions }) => {
     setShowQuestionPopup(true);
   };
 
+  const handleConfirmCustomTime = () => {
+    if (customTimeInput && parseInt(customTimeInput) > 0) {
+      setFormData((prev) => ({
+        ...prev,
+        timeLimit: customTimeInput,
+        customTimeLimit: customTimeInput,
+      }));
+      setShowTimePopup(false);
+      setCustomTimeInput("");
+    }
+  };
+
+  const handleCancelCustomTime = () => {
+    setShowTimePopup(false);
+    setCustomTimeInput("");
+    // Reset timeLimit to previous value
+    setFormData((prev) => ({
+      ...prev,
+      timeLimit: prev.customTimeLimit || "",
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (
@@ -106,22 +145,40 @@ const ExamTab = ({ exams, setExams, questions }) => {
 
     try {
       const examService = new ExamService();
+      
+      // Convert minutes to seconds
+      let durationInSeconds = 0;
+      if (formData.timeLimit === 'custom') {
+        durationInSeconds = parseInt(formData.customTimeLimit) * 60 || 0;
+      } else {
+        durationInSeconds = parseInt(formData.timeLimit) * 60 || 0;
+      }
+      
       const examData = {
         title: formData.name,
         subjectId: parseInt(formData.subjectId),
         subjectName: formData.subjectName,
-        durationSeconds: parseInt(formData.timeLimit) || 0,
+        durationSeconds: durationInSeconds,
         questionIds: formData.questionIds,
       };
 
       let updatedExams;
+      let targetExamId;
       if (editingId) {
         updatedExams = await examService.updateExam(editingId, examData);
+        targetExamId = editingId;
         setEditingId(null);
       } else {
         updatedExams = await examService.createExam(examData);
+        // Find the newly created exam (it should be the last one in the list)
+        targetExamId = updatedExams[updatedExams.length - 1]?.id;
       }
       setExams(updatedExams);
+      
+      // Scroll to and highlight the exam
+      if (targetExamId) {
+        scrollToAndHighlightExam(targetExamId);
+      }
 
       // Reset form after successful create/update
       setFormData({
@@ -129,6 +186,7 @@ const ExamTab = ({ exams, setExams, questions }) => {
         subjectId: "",
         subjectName: "",
         timeLimit: "",
+        customTimeLimit: "",
         questionIds: [],
       });
       setSelectedSubjectId("");
@@ -142,11 +200,20 @@ const ExamTab = ({ exams, setExams, questions }) => {
 
   const handleEditExam = (exam) => {
     setEditingId(exam.id);
+    
+    // Convert seconds to minutes
+    const timeInMinutes = Math.floor(exam.timeLimit / 60);
+    
+    // Check if time matches predefined options
+    const predefinedTimes = ['15', '30', '45', '60', '90', '120', '150', '180'];
+    const isPredefined = predefinedTimes.includes(timeInMinutes.toString());
+    
     setFormData({
       name: exam.name,
       subjectId: exam.subjectId.toString(),
       subjectName: exam.subjectName,
-      timeLimit: exam.timeLimit.toString(),
+      timeLimit: isPredefined ? timeInMinutes.toString() : timeInMinutes.toString(),
+      customTimeLimit: isPredefined ? "" : timeInMinutes.toString(),
       questionIds: exam.questionIds,
     });
     setSelectedSubjectId(exam.subjectId.toString());
@@ -179,6 +246,7 @@ const ExamTab = ({ exams, setExams, questions }) => {
       subjectId: "",
       subjectName: "",
       timeLimit: "",
+      customTimeLimit: "",
       questionIds: [],
     });
     setSelectedSubjectId("");
@@ -211,6 +279,29 @@ const ExamTab = ({ exams, setExams, questions }) => {
     } else {
       return `${secs}s`;
     }
+  };
+
+  // Function to scroll to and highlight an exam
+  const scrollToAndHighlightExam = (examId) => {
+    // Use setTimeout to ensure DOM is updated after state change
+    setTimeout(() => {
+      const examElement = document.getElementById(`exam-${examId}`);
+      
+      if (examElement) {
+        examElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+        
+        // Highlight the exam
+        setHighlightedExamId(examId);
+        
+        // Remove highlight after 2 seconds
+        setTimeout(() => {
+          setHighlightedExamId(null);
+        }, 2000);
+      }
+    }, 100); // Small delay to ensure DOM is updated
   };
 
   return (
@@ -256,6 +347,7 @@ const ExamTab = ({ exams, setExams, questions }) => {
               value={formData.subjectId}
               onChange={handleSubjectChange}
               required
+              disabled={editingId}
             >
               <option value="">Chọn chủ đề</option>
               {subjects.map((subject) => (
@@ -264,19 +356,37 @@ const ExamTab = ({ exams, setExams, questions }) => {
                 </option>
               ))}
             </select>
+            {editingId && (
+              <div className="form-text text-warning">
+                ⚠️ Không thể thay đổi chủ đề khi chỉnh sửa đề thi
+              </div>
+            )}
           </div>
 
           <div className="form-group">
-            <label htmlFor="timeLimit">Thời gian làm bài (giây):</label>
-            <input
-              type="number"
+            <label htmlFor="timeLimit">Thời gian làm bài (phút):</label>
+            <select
               id="timeLimit"
               name="timeLimit"
               value={formData.timeLimit}
               onChange={handleInputChange}
-              placeholder="Nhập thời gian (giây)"
-              min="1"
-            />
+            >
+              <option value="">Chọn thời gian</option>
+              <option value="15">15 phút</option>
+              <option value="30">30 phút</option>
+              <option value="45">45 phút</option>
+              <option value="60">1 giờ</option>
+              <option value="90">1.5 giờ</option>
+              <option value="120">2 giờ</option>
+              <option value="150">2.5 giờ</option>
+              <option value="180">3 giờ</option>
+              <option value="custom">Tùy chỉnh...</option>
+              {formData.customTimeLimit && (
+                <option value={formData.customTimeLimit}>
+                  {formData.customTimeLimit} phút (tùy chỉnh)
+                </option>
+              )}
+            </select>
           </div>
 
           <div className="form-group">
@@ -351,7 +461,11 @@ const ExamTab = ({ exams, setExams, questions }) => {
             style={{ marginTop: "15px", marginBottom: "30px" }}
           >
             {exams.map((exam) => (
-              <div key={exam.id} className="exam-card">
+              <div 
+                key={exam.id} 
+                id={`exam-${exam.id}`}
+                className={`exam-card ${highlightedExamId === exam.id ? 'highlighted' : ''}`}
+              >
                 <div className="exam-header">
                   <h4>{exam.name}</h4>
                   <span className="subject-badge">{exam.subjectName}</span>
@@ -477,6 +591,52 @@ const ExamTab = ({ exams, setExams, questions }) => {
                   </div>
                 </>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Time Popup */}
+      {showTimePopup && (
+        <div className="popup-overlay">
+          <div className="popup-content">
+            <div className="popup-header">
+              <h3>Nhập thời gian tùy chỉnh</h3>
+              <button
+                onClick={handleCancelCustomTime}
+                className="close-btn"
+              >
+                ×
+              </button>
+            </div>
+            <div className="popup-body">
+              <div className="form-group">
+                <label htmlFor="customTimeInput">Thời gian (phút):</label>
+                <input
+                  type="number"
+                  id="customTimeInput"
+                  value={customTimeInput}
+                  onChange={(e) => setCustomTimeInput(e.target.value)}
+                  placeholder="Nhập thời gian (phút)"
+                  min="1"
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="popup-actions">
+              <button
+                onClick={handleConfirmCustomTime}
+                className="btn btn-primary"
+                disabled={!customTimeInput || parseInt(customTimeInput) <= 0}
+              >
+                Xác nhận
+              </button>
+              <button
+                onClick={handleCancelCustomTime}
+                className="btn btn-secondary"
+              >
+                Hủy
+              </button>
             </div>
           </div>
         </div>
