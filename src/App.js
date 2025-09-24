@@ -1,44 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import SubjectView from "./views/SubjectView";
-import QuestionTab from "./components/QuestionTab";
-import ExamTab from "./components/ExamTab";
+import QuestionView from "./views/QuestionView";
+import ExamView from "./views/ExamView";
 
 function App() {
   const [activeTab, setActiveTab] = useState("subject");
-  const [questions, setQuestions] = useState([]);
-  const [exams, setExams] = useState([]);
-
-  // Load data from localStorage on component mount (only for questions and exams)
-  useEffect(() => {
-    const savedQuestions = localStorage.getItem("questions");
-    const savedExams = localStorage.getItem("exams");
-
-    if (savedQuestions) setQuestions(JSON.parse(savedQuestions));
-    if (savedExams) setExams(JSON.parse(savedExams));
-  }, []);
-
-  // Save data to localStorage whenever data changes (only for questions and exams)
-  useEffect(() => {
-    localStorage.setItem("questions", JSON.stringify(questions));
-  }, [questions]);
-
-  useEffect(() => {
-    localStorage.setItem("exams", JSON.stringify(exams));
-  }, [exams]);
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "subject":
         return <SubjectView />;
       case "question":
-        return (
-          <QuestionTab questions={questions} setQuestions={setQuestions} />
-        );
+        return <QuestionView />;
       case "exam":
-        return (
-          <ExamTab exams={exams} setExams={setExams} questions={questions} />
-        );
+        return <ExamView />;
       default:
         return <SubjectView />;
     }
