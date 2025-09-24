@@ -9,6 +9,7 @@ const QuestionTab = ({ questions, setQuestions }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [highlightedQuestionId, setHighlightedQuestionId] = useState(null);
+  const [filterSubjectId, setFilterSubjectId] = useState("");
   const [formData, setFormData] = useState({
     content: "",
     optionA: "",
@@ -215,6 +216,12 @@ const QuestionTab = ({ questions, setQuestions }) => {
     return options[correctAnswer] || correctAnswer;
   };
 
+  // Filter questions by subject
+  const getFilteredQuestions = () => {
+    if (!filterSubjectId) return questions;
+    return questions.filter(q => q.subjectId === parseInt(filterSubjectId));
+  };
+
   return (
     <div className="question-tab">
       <div className="tab-header">
@@ -389,7 +396,24 @@ const QuestionTab = ({ questions, setQuestions }) => {
       </div>
 
       <div className="questions-list">
-        <h3>Danh sách câu hỏi ({questions.length})</h3>
+        <div className="questions-header">
+          <h3>Danh sách câu hỏi ({questions.length})</h3>
+          <div className="filter-controls">
+            <label htmlFor="filterSubject">Lọc theo chủ đề:</label>
+            <select
+              id="filterSubject"
+              value={filterSubjectId}
+              onChange={(e) => setFilterSubjectId(e.target.value)}
+            >
+              <option value="">Tất cả chủ đề</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                  {subject.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         
         {error && (
           <div className="error-message">
@@ -406,18 +430,18 @@ const QuestionTab = ({ questions, setQuestions }) => {
           </div>
         )}
         
-        {!loading && !error && questions.length === 0 && (
+        {!loading && !error && getFilteredQuestions().length === 0 && (
           <p className="empty-message">
-            Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!
+            {filterSubjectId ? "Không có câu hỏi nào trong chủ đề này." : "Chưa có câu hỏi nào. Hãy thêm câu hỏi đầu tiên!"}
           </p>
         )}
         
-        {!loading && !error && questions.length > 0 && (
+        {!loading && !error && getFilteredQuestions().length > 0 && (
           <div
             className="questions-grid"
             style={{ marginTop: "15px", marginBottom: "30px" }}
           >
-            {questions.map((question) => (
+            {getFilteredQuestions().map((question) => (
               <div 
                 key={question.id} 
                 id={`question-${question.id}`}
