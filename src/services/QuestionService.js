@@ -52,7 +52,8 @@ class QuestionService {
         questionData.optionD,
         questionData.correctAnswer,
         questionData.subjectId,
-        questionData.subjectName
+        questionData.subjectName,
+        questionData.explanation
       );
       
       const requestBody = question.toApiFormat();
@@ -92,7 +93,8 @@ class QuestionService {
         questionData.optionD,
         questionData.correctAnswer,
         questionData.subjectId,
-        questionData.subjectName
+        questionData.subjectName,
+        questionData.explanation
       );
       
       const requestBody = question.toApiFormat();

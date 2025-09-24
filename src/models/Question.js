@@ -1,5 +1,5 @@
 class Question {
-  constructor(id, content, optionA, optionB, optionC, optionD, correctAnswer, subjectId, subjectName) {
+  constructor(id, content, optionA, optionB, optionC, optionD, correctAnswer, subjectId, subjectName, explanation = "") {
     this.id = id;
     this.content = content;
     this.optionA = optionA;
@@ -9,6 +9,7 @@ class Question {
     this.correctAnswer = correctAnswer;
     this.subjectId = subjectId;
     this.subjectName = subjectName;
+    this.explanation = explanation;
   }
 
   // Static method to create from API response
@@ -31,7 +32,8 @@ class Question {
       apiData.option_d,
       correctAnswer,
       subjectId,
-      subjectName
+      subjectName,
+      apiData.explanation || ""
     );
   }
 
@@ -53,7 +55,8 @@ class Question {
       option_d: this.optionD,
       correct_answer: correctAnswer,
       subject_id: this.subjectId,
-      subject_name: this.subjectName
+      subject_name: this.subjectName,
+      explanation: this.explanation
     };
   }
 
@@ -85,7 +88,8 @@ class Question {
       this.optionD,
       this.correctAnswer,
       this.subjectId,
-      this.subjectName
+      this.subjectName,
+      this.explanation
     );
   }
 }

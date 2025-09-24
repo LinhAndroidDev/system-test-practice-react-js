@@ -18,6 +18,7 @@ const QuestionView = () => {
       optionC: "",
       optionD: "",
       correctAnswer: "",
+      explanation: "",
       subjectId: null,
       subjectName: "",
     },
@@ -200,6 +201,21 @@ const QuestionView = () => {
           </div>
 
           <div className="form-group">
+            <label htmlFor="explanation">Giải thích (tùy chọn):</label>
+            <textarea
+              id="explanation"
+              name="explanation"
+              value={state.formData.explanation}
+              onChange={handleInputChange}
+              placeholder="Nhập giải thích cho câu trả lời đúng (không bắt buộc)"
+              rows="3"
+            />
+            <div className="form-text">
+              💡 Giải thích giúp học sinh hiểu rõ hơn về câu trả lời đúng
+            </div>
+          </div>
+
+          <div className="form-group">
             <label>Chủ đề:</label>
             <div className="subject-selector">
               {state.formData.subjectName ? (
@@ -329,6 +345,20 @@ const QuestionView = () => {
                 <div className="question-answer">
                   <strong>Đáp án đúng: {getCorrectAnswerText(question.correctAnswer)}</strong>
                 </div>
+                {question.explanation && (
+                  <div className="question-explanation" style={{ 
+                    marginTop: "12px", 
+                    padding: "12px", 
+                    backgroundColor: "#f8f9fa", 
+                    border: "1px solid #e9ecef", 
+                    borderRadius: "6px",
+                    fontSize: "14px",
+                    color: "#495057"
+                  }}>
+                    <strong style={{ color: "#007bff" }}>💡 Giải thích:</strong>
+                    <p style={{ margin: "8px 0 0 0", lineHeight: "1.5" }}>{question.explanation}</p>
+                  </div>
+                )}
                 <div className="question-actions">
                   <button
                     onClick={() => handleEditQuestion(question)}

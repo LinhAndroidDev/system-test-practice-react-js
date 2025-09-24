@@ -17,6 +17,7 @@ class QuestionController {
       optionC: "",
       optionD: "",
       correctAnswer: "",
+      explanation: "",
       subjectId: null,
       subjectName: "",
     };
@@ -149,6 +150,7 @@ class QuestionController {
       optionC: question.optionC,
       optionD: question.optionD,
       correctAnswer: question.correctAnswer,
+      explanation: question.explanation || "",
       subjectId: question.subjectId,
       subjectName: question.subjectName,
     };
@@ -180,6 +182,7 @@ class QuestionController {
       optionC: "",
       optionD: "",
       correctAnswer: "",
+      explanation: "",
       subjectId: null,
       subjectName: "",
     };
