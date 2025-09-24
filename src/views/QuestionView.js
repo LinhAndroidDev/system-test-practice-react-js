@@ -99,8 +99,8 @@ const QuestionView = () => {
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
+          <div className="form-row" style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
+            <div className="form-group" style={{ flex: "1", minWidth: "200px" }}>
               <label htmlFor="optionA">Lựa chọn A:</label>
               <input
                 type="text"
@@ -113,7 +113,7 @@ const QuestionView = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{ flex: "1", minWidth: "200px" }}>
               <label htmlFor="optionB">Lựa chọn B:</label>
               <input
                 type="text"
@@ -126,7 +126,7 @@ const QuestionView = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{ flex: "1", minWidth: "200px" }}>
               <label htmlFor="optionC">Lựa chọn C:</label>
               <input
                 type="text"
@@ -139,7 +139,7 @@ const QuestionView = () => {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group" style={{ flex: "1", minWidth: "200px" }}>
               <label htmlFor="optionD">Lựa chọn D:</label>
               <input
                 type="text"
@@ -305,7 +305,7 @@ const QuestionView = () => {
                   <h4>Câu hỏi #{question.id}</h4>
                   <span className="subject-badge">{question.subjectName}</span>
                 </div>
-                <div className="question-content">
+                <div className="question-content" style={{ marginTop: "12px" }}>
                   <p>{question.content}</p>
                 </div>
                 <div className="question-options">
