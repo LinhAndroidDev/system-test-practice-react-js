@@ -369,15 +369,64 @@ const QuestionView = () => {
                 <p>Chưa có chủ đề nào. Hãy thêm chủ đề trước!</p>
               ) : (
                 <div className="subjects-list">
-                  {state.subjects.map((subject) => (
-                    <div
-                      key={subject.id}
-                      className="subject-item"
-                      onClick={() => handleSubjectSelect(subject)}
-                    >
-                      <span>{subject.name}</span>
-                    </div>
-                  ))}
+                  {state.subjects.map((subject) => {
+                    const isSelected = state.formData.subjectId === subject.id;
+                    return (
+                      <div
+                        key={subject.id}
+                        className="subject-item"
+                        onClick={() => handleSubjectSelect(subject)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          padding: "12px 16px",
+                          margin: "8px 0",
+                          backgroundColor: isSelected ? "#e3f2fd" : "#f8f9fa",
+                          border: isSelected ? "2px solid #2196f3" : "1px solid #e9ecef",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          transition: "all 0.2s ease",
+                          boxShadow: isSelected ? "0 4px 8px rgba(33, 150, 243, 0.3)" : "0 2px 4px rgba(0,0,0,0.1)",
+                          transform: isSelected ? "translateY(-1px)" : "translateY(0)"
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.target.style.backgroundColor = "#e3f2fd";
+                            e.target.style.borderColor = "#2196f3";
+                            e.target.style.transform = "translateY(-2px)";
+                            e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.target.style.backgroundColor = "#f8f9fa";
+                            e.target.style.borderColor = "#e9ecef";
+                            e.target.style.transform = "translateY(0)";
+                            e.target.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+                          }
+                        }}
+                      >
+                        <span style={{ 
+                          fontSize: "18px", 
+                          marginRight: "12px",
+                          color: isSelected ? "#1976d2" : "#2196f3"
+                        }}>📚</span>
+                        <span style={{ 
+                          fontSize: "16px", 
+                          fontWeight: isSelected ? "600" : "500",
+                          color: isSelected ? "#1976d2" : "#333"
+                        }}>{subject.name}</span>
+                        {isSelected && (
+                          <span style={{
+                            marginLeft: "auto",
+                            fontSize: "14px",
+                            color: "#1976d2",
+                            fontWeight: "600"
+                          }}>✓</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
