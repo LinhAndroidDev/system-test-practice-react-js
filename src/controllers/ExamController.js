@@ -136,6 +136,13 @@ class ExamController {
     this.notifyUpdate();
   }
 
+  // Handle close question popup
+  handleCloseQuestionPopup() {
+    this.showQuestionPopup = false;
+    this.selectedQuestions = [];
+    this.notifyUpdate();
+  }
+
   // Handle custom time confirmation
   handleConfirmCustomTime() {
     if (this.customTimeInput && parseInt(this.customTimeInput) > 0) {

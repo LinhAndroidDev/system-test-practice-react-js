@@ -53,6 +53,10 @@ const ExamView = () => {
     controller.handleOpenQuestionPopup();
   };
 
+  const handleCloseQuestionPopup = () => {
+    controller.handleCloseQuestionPopup();
+  };
+
   const handleConfirmCustomTime = () => {
     controller.handleConfirmCustomTime();
   };
@@ -314,7 +318,7 @@ const ExamView = () => {
             <div className="popup-header">
               <h3>Chọn câu hỏi cho đề thi</h3>
               <button
-                onClick={() => controller.handleInputChange('showQuestionPopup', false)}
+                onClick={handleCloseQuestionPopup}
                 className="close-btn"
               >
                 ×
@@ -364,7 +368,7 @@ const ExamView = () => {
                       Thêm {state.selectedQuestions.length} câu hỏi
                     </button>
                     <button
-                      onClick={() => controller.handleInputChange('showQuestionPopup', false)}
+                      onClick={handleCloseQuestionPopup}
                       className="btn btn-secondary"
                     >
                       Hủy
