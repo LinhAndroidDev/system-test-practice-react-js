@@ -335,6 +335,40 @@ body {
   font-size: 1.2rem;
 }
 
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.question-header h4 {
+  margin: 0;
+  flex: 1;
+}
+
+.question-header .subject-badge {
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
+.exam-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.exam-header h4 {
+  margin: 0;
+  flex: 1;
+}
+
+.exam-header .subject-badge {
+  margin-left: 1rem;
+  flex-shrink: 0;
+}
+
 .subject-badge {
   background: #667eea;
   color: white;
