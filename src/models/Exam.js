@@ -24,12 +24,12 @@ class Exam {
     
     return new Exam(
       apiData.id,
-      apiData.title, // API uses 'title' instead of 'name'
+      apiData.title,
       subjectId,
       subjectName,
-      apiData.duration_seconds, // API uses 'duration_seconds' instead of 'timeLimit'
+      apiData.durationSeconds,
       questionIds,
-      apiData.created_at, // API uses 'created_at' instead of 'createdAt'
+      apiData.createdAt,
       questions
     );
   }
@@ -38,12 +38,12 @@ class Exam {
   toApiFormat() {
     return {
       id: this.id,
-      title: this.name, // API expects 'title' instead of 'name'
-      subject_id: this.subjectId, // API expects 'subject_id' instead of 'subjectId'
-      subject_name: this.subjectName, // API expects 'subject_name' instead of 'subjectName'
-      duration_seconds: this.timeLimit, // API expects 'duration_seconds' instead of 'timeLimit'
-      question_ids: this.questionIds, // API expects 'question_ids' instead of 'questionIds'
-      created_at: this.createdAt // API expects 'created_at' instead of 'createdAt'
+      title: this.name,
+      subjectId: this.subjectId,
+      subjectName: this.subjectName,
+      durationSeconds: this.timeLimit,
+      questionIds: this.questionIds,
+      createdAt: this.createdAt
     };
   }
 

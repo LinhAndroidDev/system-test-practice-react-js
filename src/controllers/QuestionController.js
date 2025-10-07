@@ -1,5 +1,5 @@
-import QuestionService from '../services/QuestionService.js';
-import SubjectService from '../services/SubjectService.js';
+import QuestionService from "../services/QuestionService.js";
+import SubjectService from "../services/SubjectService.js";
 
 class QuestionController {
   constructor() {
@@ -64,8 +64,8 @@ class QuestionController {
 
       this.error = null;
     } catch (error) {
-      console.error('Error loading data:', error);
-      this.error = 'Không thể tải dữ liệu từ server';
+      console.error("Error loading data:", error);
+      this.error = "Không thể tải dữ liệu từ server";
     } finally {
       this.loading = false;
       this.notifyUpdate();
@@ -113,14 +113,19 @@ class QuestionController {
         optionC: this.formData.optionC,
         optionD: this.formData.optionD,
         correctAnswer: this.formData.correctAnswer,
+        explanation: this.formData.explanation || "",
         subjectId: this.formData.subjectId,
         subjectName: this.formData.subjectName,
       };
 
       if (this.editingId) {
-        this.questions = await questionService.updateQuestion(this.editingId, questionData);
+        const targetQuestionId = this.editingId;
+        this.questions = await questionService.updateQuestion(
+          this.editingId,
+          questionData
+        );
         this.editingId = null;
-        this.scrollToAndHighlightQuestion(this.editingId);
+        this.scrollToAndHighlightQuestion(targetQuestionId);
       } else {
         this.questions = await questionService.createQuestion(questionData);
         // Find the newly created question and highlight it
@@ -132,8 +137,10 @@ class QuestionController {
 
       this.resetForm();
     } catch (error) {
-      console.error('Error processing question:', error);
-      this.error = this.editingId ? 'Không thể cập nhật câu hỏi. Vui lòng thử lại.' : 'Không thể tạo câu hỏi. Vui lòng thử lại.';
+      console.error("Error processing question:", error);
+      this.error = this.editingId
+        ? "Không thể cập nhật câu hỏi. Vui lòng thử lại."
+        : "Không thể tạo câu hỏi. Vui lòng thử lại.";
     } finally {
       this.loading = false;
       this.notifyUpdate();
@@ -156,13 +163,13 @@ class QuestionController {
     };
     this.notifyUpdate();
     // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // Handle delete question
   handleDeleteQuestion(id) {
     if (window.confirm("Bạn có chắc chắn muốn xóa câu hỏi này?")) {
-      this.questions = this.questions.filter(q => q.id !== id);
+      this.questions = this.questions.filter((q) => q.id !== id);
       this.notifyUpdate();
     }
   }
@@ -209,7 +216,9 @@ class QuestionController {
   // Get filtered questions
   getFilteredQuestions() {
     if (!this.filterSubjectId) return this.questions;
-    return this.questions.filter(q => q.subjectId === parseInt(this.filterSubjectId));
+    return this.questions.filter(
+      (q) => q.subjectId === parseInt(this.filterSubjectId)
+    );
   }
 
   // Scroll to and highlight question
@@ -217,9 +226,9 @@ class QuestionController {
     setTimeout(() => {
       const questionElement = document.getElementById(`question-${questionId}`);
       if (questionElement) {
-        questionElement.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
+        questionElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
         });
         this.highlightedQuestionId = questionId;
         this.notifyUpdate();

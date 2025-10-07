@@ -32,9 +32,9 @@ class ExamService {
       const questionsString = examData.questionIds.join(', ');
       
       const requestBody = {
-        subject_id: examData.subjectId,
+        subjectId: examData.subjectId,
         title: examData.title,
-        duration_seconds: examData.durationSeconds,
+        durationSeconds: examData.durationSeconds,
         questions: questionsString
       };
 
@@ -70,9 +70,9 @@ class ExamService {
       
       const requestBody = {
         id: id,
-        subject_id: examData.subjectId,
+        subjectId: examData.subjectId,
         title: examData.title,
-        duration_seconds: examData.durationSeconds,
+        durationSeconds: examData.durationSeconds,
         questions: questionsString
       };
 

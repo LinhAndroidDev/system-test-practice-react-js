@@ -31,7 +31,7 @@ class SubjectService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name_subject: subjectData.name
+          nameSubject: subjectData.name
         })
       });
       
@@ -56,11 +56,8 @@ class SubjectService {
     try {
       const requestBody = {
         id: id,
-        name_subject: subjectData.name
+        nameSubject: subjectData.name
       };
-      
-      console.log('Update request body:', requestBody);
-      console.log('Update API URL:', `${this.baseUrl}/update`);
       
       const response = await fetch(`${this.baseUrl}/update`, {
         method: 'PUT',
@@ -70,19 +67,12 @@ class SubjectService {
         body: JSON.stringify(requestBody)
       });
       
-      console.log('Update response status:', response.status);
-      console.log('Update response ok:', response.ok);
-      
       const result = await response.json();
-      console.log('Update API Response:', result);
       
       if (result.status === 200 && result.data) {
         // API returns updated list of all subjects, return the entire list
-        const transformedSubjects = result.data.map(item => Subject.fromApiResponse(item));
-        console.log('Update transformed subjects:', transformedSubjects);
-        return transformedSubjects;
+        return result.data.map(item => Subject.fromApiResponse(item));
       } else {
-        console.error('Update API Error:', result);
         throw new Error(result.message || 'Failed to update subject');
       }
     } catch (error) {
