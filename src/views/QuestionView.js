@@ -88,6 +88,36 @@ const QuestionView = () => {
         <h3>{state.editingId ? "Sửa câu hỏi" : "Thêm câu hỏi mới"}</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
+            <label>Chủ đề:</label>
+            <div className="subject-selector">
+              {state.formData.subjectName ? (
+                <div className="selected-subject">
+                  <span>{state.formData.subjectName}</span>
+                  <button
+                    type="button"
+                    onClick={handleShowSubjectPopup}
+                    className="btn btn-secondary btn-sm"
+                    disabled={state.editingId}
+                  >
+                    {state.editingId ? "Không thể thay đổi" : "Thay đổi"}
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleShowSubjectPopup}
+                  className="btn btn-outline"
+                  disabled={state.editingId}
+                >
+                  {state.editingId
+                    ? "Không thể thay đổi chủ đề"
+                    : "Chọn chủ đề"}
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="form-group">
             <label htmlFor="content">Nội dung câu hỏi:</label>
             <textarea
               id="content"
@@ -230,36 +260,6 @@ const QuestionView = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Chủ đề:</label>
-            <div className="subject-selector">
-              {state.formData.subjectName ? (
-                <div className="selected-subject">
-                  <span>{state.formData.subjectName}</span>
-                  <button
-                    type="button"
-                    onClick={handleShowSubjectPopup}
-                    className="btn btn-secondary btn-sm"
-                    disabled={state.editingId}
-                  >
-                    {state.editingId ? "Không thể thay đổi" : "Thay đổi"}
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleShowSubjectPopup}
-                  className="btn btn-outline"
-                  disabled={state.editingId}
-                >
-                  {state.editingId
-                    ? "Không thể thay đổi chủ đề"
-                    : "Chọn chủ đề"}
-                </button>
-              )}
-            </div>
-          </div>
-
           <div className="form-actions">
             <button
               type="submit"
@@ -288,7 +288,10 @@ const QuestionView = () => {
 
       <div className="questions-list">
         <div className="questions-header">
-          <h3>Danh sách câu hỏi ({state.questions.length})</h3>
+          <h3>
+            Danh sách câu hỏi ({getFilteredQuestions().length}
+            {state.filterSubjectId && ` / ${state.questions.length}`})
+          </h3>
           <div className="filter-controls">
             <label htmlFor="filterSubject">Lọc theo chủ đề:</label>
             <select
