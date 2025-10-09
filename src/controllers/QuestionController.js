@@ -23,6 +23,8 @@ class QuestionController {
     };
     this.showSubjectPopup = false;
     this.callbacks = {};
+    this.questionService = new QuestionService();
+    this.subjectService = new SubjectService();
   }
 
   // Register callbacks for UI updates
@@ -55,12 +57,10 @@ class QuestionController {
 
     try {
       // Load subjects
-      const subjectService = new SubjectService();
-      this.subjects = await subjectService.getSubjects();
+      this.subjects = await this.subjectService.getSubjects();
 
       // Load questions
-      const questionService = new QuestionService();
-      this.questions = await questionService.getQuestions();
+      this.questions = await this.questionService.getQuestions();
 
       this.error = null;
     } catch (error) {
@@ -120,14 +120,14 @@ class QuestionController {
 
       if (this.editingId) {
         const targetQuestionId = this.editingId;
-        this.questions = await questionService.updateQuestion(
+        this.questions = await this.questionService.updateQuestion(
           this.editingId,
           questionData
         );
         this.editingId = null;
         this.scrollToAndHighlightQuestion(targetQuestionId);
       } else {
-        this.questions = await questionService.createQuestion(questionData);
+        this.questions = await this.questionService.createQuestion(questionData);
         // Find the newly created question and highlight it
         const newQuestion = this.questions[this.questions.length - 1];
         if (newQuestion) {
@@ -167,10 +167,22 @@ class QuestionController {
   }
 
   // Handle delete question
-  handleDeleteQuestion(id) {
+  async handleDeleteQuestion(id) {
     if (window.confirm("Bạn có chắc chắn muốn xóa câu hỏi này?")) {
-      this.questions = this.questions.filter((q) => q.id !== id);
+      this.loading = true;
+      this.error = null;
       this.notifyUpdate();
+
+      try {
+        this.questions = await this.questionService.deleteQuestion(id);
+        this.notifyUpdate();
+      } catch (error) {
+        this.error = "❌ Không thể xóa câu hỏi. Vui lòng thử lại.";
+        this.notifyUpdate();
+      } finally {
+        this.loading = false;
+        this.notifyUpdate();
+      }
     }
   }
 

@@ -130,8 +130,9 @@ class QuestionService {
       
       const result = await response.json();
       
-      if (result.status === 200) {
-        return true;
+      if (result.status === 200 && result.data) {
+        // API returns updated list of all questions, return the entire list
+        return result.data.map(item => Question.fromApiResponse(item));
       } else {
         throw new Error(result.message || 'Failed to delete question');
       }
