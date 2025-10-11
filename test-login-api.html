@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-submit:hover {
+            opacity: 0.9;
+        }
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #c82333;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #e7f3ff;
+            color: #004085;
+            border: 1px solid #b3d9ff;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        .parsed-data {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #c3e6cb;
+            line-height: 1.8;
+        }
+        .storage-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test Login API</h1>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" value="linh@gmail.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="text" id="password" value="1234567" required>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-submit">🔐 Đăng nhập</button>
+                <button type="button" class="btn-clear" onclick="clearStorage()">🗑️ Xóa Token</button>
+            </div>
+        </form>
+        
+        <div id="result" class="result">
+            <h3>Response:</h3>
+            <pre id="response"></pre>
+            <div id="parsedData" class="parsed-data"></div>
+            <div id="storageInfo" class="storage-info"></div>
+        </div>
+
+        <div class="info">
+            <h4 style="margin-top: 0;">📋 Request Body:</h4>
+            <pre id="requestBody"></pre>
+        </div>
+
+        <div class="info" style="background: #f8f9fa; border-color: #dee2e6;">
+            <h4 style="margin-top: 0;">📌 Current LocalStorage:</h4>
+            <div id="currentStorage" style="font-size: 13px; line-height: 1.6;"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateStorageDisplay() {
+            const currentStorage = document.getElementById('currentStorage');
+            const authToken = localStorage.getItem('authToken');
+            const userData = localStorage.getItem('userData');
+            
+            currentStorage.innerHTML = `
+                <strong>authToken:</strong> ${authToken 
+                    ? `<code>${authToken.substring(0, 50)}...</code>` 
+                    : '<em style="color: #999;">null</em>'}
+                <br>
+                <strong>userData:</strong> ${userData 
+                    ? `<pre style="display: inline-block; margin: 5px 0 0 0; padding: 5px; background: white; font-size: 11px;">${userData}</pre>` 
+                    : '<em style="color: #999;">null</em>'}
+            `;
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('userData');
+            console.log('🗑️ Cleared localStorage');
+            updateStorageDisplay();
+            alert('Đã xóa token khỏi localStorage');
+        }
+
+        updateStorageDisplay();
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('result');
+            const responseDiv = document.getElementById('response');
+            const parsedDataDiv = document.getElementById('parsedData');
+            const storageInfoDiv = document.getElementById('storageInfo');
+            const requestBodyDiv = document.getElementById('requestBody');
+            
+            const requestData = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            requestBodyDiv.textContent = JSON.stringify(requestData, null, 2);
+            
+            console.log('🚀 Sending login request:', requestData);
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                const data = await response.json();
+                
+                console.log('📥 Response:', data);
+                
+                resultDiv.style.display = 'block';
+                
+                if (response.ok && data.status === 200) {
+                    resultDiv.className = 'result success';
+                    responseDiv.textContent = JSON.stringify(data, null, 2);
+                    
+                    // Parse and display data
+                    const { userId, username, role, auth } = data.data;
+                    parsedDataDiv.innerHTML = `
+                        <h4 style="margin-top: 0;">📋 Parsed Data:</h4>
+                        <strong>👤 User ID:</strong> ${userId}<br>
+                        <strong>📛 Username:</strong> ${username}<br>
+                        <strong>📧 Email:</strong> ${requestData.email}<br>
+                        <strong>🎭 Role:</strong> ${role === 0 ? 'User' : 'Admin'} (${role})<br>
+                        <strong>🔑 Access Token:</strong> <code>${auth.accessToken.substring(0, 50)}...</code><br>
+                        <strong>💬 Message:</strong> ${data.message}<br>
+                        <strong>📊 Status:</strong> ${data.status}
+                    `;
+                    
+                    // Save to localStorage
+                    localStorage.setItem('authToken', auth.accessToken);
+                    localStorage.setItem('userData', JSON.stringify({
+                        id: userId,
+                        name: username,
+                        email: requestData.email,
+                        role: role
+                    }));
+                    
+                    storageInfoDiv.innerHTML = `
+                        <strong>💾 LocalStorage:</strong><br>
+                        ✅ Token đã được lưu vào <code>authToken</code><br>
+                        ✅ User data đã được lưu vào <code>userData</code>
+                    `;
+                    
+                    console.log('✅ Token saved to localStorage!');
+                    updateStorageDisplay();
+                } else {
+                    resultDiv.className = 'result error';
+                    responseDiv.textContent = JSON.stringify(data, null, 2);
+                    parsedDataDiv.innerHTML = '';
+                    storageInfoDiv.innerHTML = '';
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                responseDiv.textContent = `Error: ${error.message}`;
+                parsedDataDiv.innerHTML = '';
+                storageInfoDiv.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>
+

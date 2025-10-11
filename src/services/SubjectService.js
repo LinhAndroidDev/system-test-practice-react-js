@@ -5,10 +5,26 @@ class SubjectService {
     this.baseUrl = 'http://localhost:8080/api/subject';
   }
 
+  // Get auth headers with token
+  getAuthHeaders() {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  }
+
   // Get all subjects
   async getSubjects() {
     try {
-      const response = await fetch(`${this.baseUrl}/get_subjects`);
+      const response = await fetch(`${this.baseUrl}/get_subjects`, {
+        headers: this.getAuthHeaders()
+      });
       const result = await response.json();
       
       if (result.status === 200 && result.data) {
@@ -27,9 +43,7 @@ class SubjectService {
     try {
       const response = await fetch(`${this.baseUrl}/add_subject`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify({
           nameSubject: subjectData.name
         })
@@ -61,9 +75,7 @@ class SubjectService {
       
       const response = await fetch(`${this.baseUrl}/update`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
       });
       
@@ -85,7 +97,8 @@ class SubjectService {
   async deleteSubject(id) {
     try {
       const response = await fetch(`${this.baseUrl}/delete/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: this.getAuthHeaders()
       });
       
       const result = await response.json();

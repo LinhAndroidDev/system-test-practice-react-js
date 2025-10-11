@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import SubjectController from "../controllers/SubjectController.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const SubjectView = () => {
+  const { isAuthenticated } = useAuth();
   const [controller] = useState(() => new SubjectController());
   const [state, setState] = useState({
     subjects: [],
@@ -103,29 +105,36 @@ const SubjectView = () => {
     <div className="subject-tab">
       <div className="tab-header">
         <h2>Quản lý chủ đề</h2>
-        <p>Thêm, sửa, xóa các chủ đề cho câu hỏi</p>
+        <p>{isAuthenticated ? "Thêm, sửa, xóa các chủ đề cho câu hỏi" : "Xem danh sách các chủ đề"}</p>
+        {!isAuthenticated && (
+          <p style={{ color: "#ff9800", fontSize: "14px", marginTop: "8px" }}>
+            ⚠️ Bạn cần đăng nhập để thêm, sửa hoặc xóa chủ đề
+          </p>
+        )}
       </div>
 
-      <div className="add-subject-form">
-        <h3>Thêm chủ đề mới</h3>
-        <form onSubmit={handleAddSubject}>
-          <div className="form-group">
-            <label htmlFor="name">Tên chủ đề:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Nhập tên chủ đề"
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary">
-            Thêm chủ đề
-          </button>
-        </form>
-      </div>
+      {isAuthenticated && (
+        <div className="add-subject-form">
+          <h3>Thêm chủ đề mới</h3>
+          <form onSubmit={handleAddSubject}>
+            <div className="form-group">
+              <label htmlFor="name">Tên chủ đề:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Nhập tên chủ đề"
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Thêm chủ đề
+            </button>
+          </form>
+        </div>
+      )}
 
       <div className="subjects-list">
         <h3>Danh sách chủ đề ({state.subjects.length})</h3>
@@ -161,7 +170,7 @@ const SubjectView = () => {
           >
             {state.subjects.map((subject) => (
               <div key={subject.id} className="subject-card">
-                {formData.editingId === subject.id ? (
+                {isAuthenticated && formData.editingId === subject.id ? (
                   <form onSubmit={handleUpdateSubject} className="edit-form">
                     <input
                       type="text"
@@ -189,20 +198,22 @@ const SubjectView = () => {
                     <div className="subject-info">
                       <h4>{subject.name}</h4>
                     </div>
-                    <div className="subject-actions">
-                      <button
-                        onClick={() => handleEditSubject(subject)}
-                        className="btn btn-warning btn-sm"
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSubject(subject)}
-                        className="btn btn-danger btn-sm"
-                      >
-                        Xóa
-                      </button>
-                    </div>
+                    {isAuthenticated && (
+                      <div className="subject-actions">
+                        <button
+                          onClick={() => handleEditSubject(subject)}
+                          className="btn btn-warning btn-sm"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubject(subject)}
+                          className="btn btn-danger btn-sm"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

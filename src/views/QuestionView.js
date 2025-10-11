@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import QuestionController from "../controllers/QuestionController.js";
+import { useAuth } from "../contexts/AuthContext";
 
 const QuestionView = () => {
+  const { isAuthenticated } = useAuth();
   const [controller] = useState(() => new QuestionController());
   const [state, setState] = useState({
     questions: [],
@@ -81,10 +83,16 @@ const QuestionView = () => {
     <div className="question-tab">
       <div className="tab-header">
         <h2>Quản lý câu hỏi</h2>
-        <p>Tạo và quản lý các câu hỏi trắc nghiệm</p>
+        <p>{isAuthenticated ? "Tạo và quản lý các câu hỏi trắc nghiệm" : "Xem danh sách câu hỏi trắc nghiệm"}</p>
+        {!isAuthenticated && (
+          <p style={{ color: "#ff9800", fontSize: "14px", marginTop: "8px" }}>
+            ⚠️ Bạn cần đăng nhập để thêm, sửa hoặc xóa câu hỏi
+          </p>
+        )}
       </div>
 
-      <div className="add-question-form">
+      {isAuthenticated && (
+        <div className="add-question-form">
         <h3>{state.editingId ? "Sửa câu hỏi" : "Thêm câu hỏi mới"}</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -285,6 +293,7 @@ const QuestionView = () => {
           </div>
         </form>
       </div>
+      )}
 
       <div className="questions-list">
         <div className="questions-header">
@@ -411,22 +420,24 @@ const QuestionView = () => {
                       </p>
                     </div>
                   )}
-                  <div className="question-actions">
-                    <button
-                      onClick={() => handleEditQuestion(question)}
-                      className="btn btn-warning btn-sm"
-                      disabled={state.loading}
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      onClick={() => handleDeleteQuestion(question.id)}
-                      className="btn btn-danger btn-sm"
-                      disabled={state.loading}
-                    >
-                      Xóa
-                    </button>
-                  </div>
+                  {isAuthenticated && (
+                    <div className="question-actions">
+                      <button
+                        onClick={() => handleEditQuestion(question)}
+                        className="btn btn-warning btn-sm"
+                        disabled={state.loading}
+                      >
+                        Sửa
+                      </button>
+                      <button
+                        onClick={() => handleDeleteQuestion(question.id)}
+                        className="btn btn-danger btn-sm"
+                        disabled={state.loading}
+                      >
+                        Xóa
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -5,10 +5,26 @@ class QuestionService {
     this.baseUrl = 'http://localhost:8080/api/question';
   }
 
+  // Get auth headers with token
+  getAuthHeaders() {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  }
+
   // Get all questions
   async getQuestions() {
     try {
-      const response = await fetch(`${this.baseUrl}/get_questions`);
+      const response = await fetch(`${this.baseUrl}/get_questions`, {
+        headers: this.getAuthHeaders()
+      });
       const result = await response.json();
       
       if (result.status === 200 && result.data) {
@@ -25,7 +41,9 @@ class QuestionService {
   // Get questions by subject
   async getQuestionsBySubject(subjectId) {
     try {
-      const response = await fetch(`${this.baseUrl}/get_by_subject/${subjectId}`);
+      const response = await fetch(`${this.baseUrl}/get_by_subject/${subjectId}`, {
+        headers: this.getAuthHeaders()
+      });
       const result = await response.json();
       
       if (result.status === 200 && result.data) {
@@ -60,9 +78,7 @@ class QuestionService {
       
       const response = await fetch(`${this.baseUrl}/add_question`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
       });
       
@@ -101,9 +117,7 @@ class QuestionService {
       
       const response = await fetch(`${this.baseUrl}/update`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
       });
       
@@ -125,7 +139,8 @@ class QuestionService {
   async deleteQuestion(id) {
     try {
       const response = await fetch(`${this.baseUrl}/delete/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: this.getAuthHeaders()
       });
       
       const result = await response.json();

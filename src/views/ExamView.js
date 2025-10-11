@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import ExamController from '../controllers/ExamController.js';
+import { useAuth } from "../contexts/AuthContext";
 
 const ExamView = () => {
+  const { isAuthenticated } = useAuth();
   const [controller] = useState(() => new ExamController());
   const [state, setState] = useState({
     exams: [],
@@ -98,7 +100,12 @@ const ExamView = () => {
     <div className="exam-tab">
       <div className="tab-header">
         <h2>Quản lý đề thi</h2>
-        <p>Tạo và quản lý các đề thi trắc nghiệm</p>
+        <p>{isAuthenticated ? "Tạo và quản lý các đề thi trắc nghiệm" : "Xem danh sách đề thi trắc nghiệm"}</p>
+        {!isAuthenticated && (
+          <p style={{ color: "#ff9800", fontSize: "14px", marginTop: "8px" }}>
+            ⚠️ Bạn cần đăng nhập để thêm, sửa hoặc xóa đề thi
+          </p>
+        )}
       </div>
 
       {state.loading && (
@@ -113,7 +120,8 @@ const ExamView = () => {
         </div>
       )}
 
-      <div className="add-exam-form">
+      {isAuthenticated && (
+        <div className="add-exam-form">
         <h3>{state.editingId ? "Sửa đề thi" : "Thêm đề thi mới"}</h3>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
@@ -233,6 +241,7 @@ const ExamView = () => {
           </div>
         </form>
       </div>
+      )}
 
       <div className="exams-list">
         <h3>Danh sách đề thi ({state.exams.length})</h3>
@@ -289,22 +298,24 @@ const ExamView = () => {
                     </ul>
                   )}
                 </div>
-                <div className="exam-actions">
-                  <button
-                    onClick={() => handleEditExam(exam)}
-                    className="btn btn-warning btn-sm"
-                    disabled={state.loading}
-                  >
-                    Sửa
-                  </button>
-                  <button
-                    onClick={() => handleDeleteExam(exam.id)}
-                    className="btn btn-danger btn-sm"
-                    disabled={state.loading}
-                  >
-                    Xóa
-                  </button>
-                </div>
+                {isAuthenticated && (
+                  <div className="exam-actions">
+                    <button
+                      onClick={() => handleEditExam(exam)}
+                      className="btn btn-warning btn-sm"
+                      disabled={state.loading}
+                    >
+                      Sửa
+                    </button>
+                    <button
+                      onClick={() => handleDeleteExam(exam.id)}
+                      className="btn btn-danger btn-sm"
+                      disabled={state.loading}
+                    >
+                      Xóa
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

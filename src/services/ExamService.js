@@ -5,9 +5,25 @@ class ExamService {
     this.baseUrl = 'http://localhost:8080/api/exam';
   }
 
+  // Get auth headers with token
+  getAuthHeaders() {
+    const token = localStorage.getItem('authToken');
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    
+    return headers;
+  }
+
   async getExams() {
     try {
-      const response = await fetch(`${this.baseUrl}/get_exams`);
+      const response = await fetch(`${this.baseUrl}/get_exams`, {
+        headers: this.getAuthHeaders()
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -40,9 +56,7 @@ class ExamService {
 
       const response = await fetch(`${this.baseUrl}/add_exam`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody),
       });
 
@@ -78,9 +92,7 @@ class ExamService {
 
       const response = await fetch(`${this.baseUrl}/update`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody),
       });
 
@@ -105,6 +117,7 @@ class ExamService {
     try {
       const response = await fetch(`${this.baseUrl}/delete/${id}`, {
         method: 'DELETE',
+        headers: this.getAuthHeaders(),
       });
 
       if (!response.ok) {
