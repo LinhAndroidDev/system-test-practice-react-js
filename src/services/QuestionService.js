@@ -76,7 +76,7 @@ class QuestionService {
       
       const requestBody = question.toApiFormat();
       
-      const response = await fetch(`${this.baseUrl}/add_question`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
@@ -115,7 +115,7 @@ class QuestionService {
       
       const requestBody = question.toApiFormat();
       
-      const response = await fetch(`${this.baseUrl}/update`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'PUT',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
@@ -138,7 +138,7 @@ class QuestionService {
   // Delete question
   async deleteQuestion(id) {
     try {
-      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
         headers: this.getAuthHeaders()
       });

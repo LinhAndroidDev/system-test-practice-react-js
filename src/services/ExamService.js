@@ -54,7 +54,7 @@ class ExamService {
         questions: questionsString
       };
 
-      const response = await fetch(`${this.baseUrl}/add_exam`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody),
@@ -90,7 +90,7 @@ class ExamService {
         questions: questionsString
       };
 
-      const response = await fetch(`${this.baseUrl}/update`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'PUT',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody),
@@ -115,7 +115,7 @@ class ExamService {
 
   async deleteExam(id) {
     try {
-      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
         headers: this.getAuthHeaders(),
       });

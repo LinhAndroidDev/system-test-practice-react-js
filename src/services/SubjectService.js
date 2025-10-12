@@ -41,13 +41,18 @@ class SubjectService {
   // Create new subject
   async createSubject(subjectData) {
     try {
-      const response = await fetch(`${this.baseUrl}/add_subject`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'POST',
         headers: this.getAuthHeaders(),
         body: JSON.stringify({
           nameSubject: subjectData.name
         })
       });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText || 'Failed to create subject'}`);
+      }
       
       const result = await response.json();
       
@@ -73,7 +78,7 @@ class SubjectService {
         nameSubject: subjectData.name
       };
       
-      const response = await fetch(`${this.baseUrl}/update`, {
+      const response = await fetch(`${this.baseUrl}`, {
         method: 'PUT',
         headers: this.getAuthHeaders(),
         body: JSON.stringify(requestBody)
@@ -96,7 +101,7 @@ class SubjectService {
   // Delete subject
   async deleteSubject(id) {
     try {
-      const response = await fetch(`${this.baseUrl}/delete/${id}`, {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
         method: 'DELETE',
         headers: this.getAuthHeaders()
       });
