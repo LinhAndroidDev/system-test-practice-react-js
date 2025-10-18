@@ -1,0 +1,30 @@
+/* Math Text Display */
+.math-text-display {
+  display: inline;
+  vertical-align: baseline;
+}
+
+/* Math Inline */
+.math-inline {
+  display: inline-block;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+
+/* Fix MathQuill inline alignment */
+.math-inline .mq-math-mode {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.math-inline .mq-root-block {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* Ensure proper baseline alignment with surrounding text */
+.math-text-display .math-inline {
+  position: relative;
+  top: -0.1em;
+}
+

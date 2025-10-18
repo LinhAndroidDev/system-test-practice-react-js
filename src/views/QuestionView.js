@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
 import QuestionController from "../controllers/QuestionController.js";
 import { useAuth } from "../contexts/AuthContext";
+import MathTextInput from "../components/MathTextInput";
+import MathTextDisplay from "../components/MathTextDisplay";
+import MathInput from "../components/MathInput";
+import MathDisplay from "../components/MathDisplay";
 
 const QuestionView = () => {
   const { isAuthenticated } = useAuth();
@@ -140,13 +144,12 @@ const QuestionView = () => {
 
           <div className="form-group">
             <label htmlFor="content">Nội dung câu hỏi:</label>
-            <textarea
-              id="content"
+            <MathTextInput
               name="content"
               value={state.formData.content}
               onChange={handleInputChange}
-              placeholder="Nhập nội dung câu hỏi (bắt buộc nếu không có hình ảnh)"
-              rows="3"
+              placeholder="Nhập nội dung câu hỏi. Ví dụ: Tính giá trị của $x^2 + 2x + 1$ khi $x = 3$"
+              resetHelper={state.resetHelpers}
             />
           </div>
 
@@ -212,14 +215,12 @@ const QuestionView = () => {
               style={{ flex: "1", minWidth: "200px" }}
             >
               <label htmlFor="optionA">Lựa chọn A:</label>
-              <input
-                type="text"
-                id="optionA"
+              <MathTextInput
                 name="optionA"
                 value={state.formData.optionA}
                 onChange={handleInputChange}
-                placeholder="Nhập lựa chọn A"
-                required
+                placeholder="Đáp án A"
+                resetHelper={state.resetHelpers}
               />
             </div>
 
@@ -228,14 +229,12 @@ const QuestionView = () => {
               style={{ flex: "1", minWidth: "200px" }}
             >
               <label htmlFor="optionB">Lựa chọn B:</label>
-              <input
-                type="text"
-                id="optionB"
+              <MathTextInput
                 name="optionB"
                 value={state.formData.optionB}
                 onChange={handleInputChange}
-                placeholder="Nhập lựa chọn B"
-                required
+                placeholder="Đáp án B"
+                resetHelper={state.resetHelpers}
               />
             </div>
 
@@ -244,14 +243,12 @@ const QuestionView = () => {
               style={{ flex: "1", minWidth: "200px" }}
             >
               <label htmlFor="optionC">Lựa chọn C:</label>
-              <input
-                type="text"
-                id="optionC"
+              <MathTextInput
                 name="optionC"
                 value={state.formData.optionC}
                 onChange={handleInputChange}
-                placeholder="Nhập lựa chọn C"
-                required
+                placeholder="Đáp án C"
+                resetHelper={state.resetHelpers}
               />
             </div>
 
@@ -260,14 +257,12 @@ const QuestionView = () => {
               style={{ flex: "1", minWidth: "200px" }}
             >
               <label htmlFor="optionD">Lựa chọn D:</label>
-              <input
-                type="text"
-                id="optionD"
+              <MathTextInput
                 name="optionD"
                 value={state.formData.optionD}
                 onChange={handleInputChange}
-                placeholder="Nhập lựa chọn D"
-                required
+                placeholder="Đáp án D"
+                resetHelper={state.resetHelpers}
               />
             </div>
           </div>
@@ -320,17 +315,13 @@ const QuestionView = () => {
 
           <div className="form-group">
             <label htmlFor="explanation">Giải thích (tùy chọn):</label>
-            <textarea
-              id="explanation"
+            <MathTextInput
               name="explanation"
               value={state.formData.explanation}
               onChange={handleInputChange}
-              placeholder="Nhập giải thích cho câu trả lời đúng (không bắt buộc)"
-              rows="3"
+              placeholder="Nhập giải thích cho câu trả lời đúng. Ví dụ: Áp dụng công thức $a^2 + b^2 = c^2$"
+              resetHelper={state.resetHelpers}
             />
-            <div className="form-text">
-              💡 Giải thích giúp học sinh hiểu rõ hơn về câu trả lời đúng
-            </div>
           </div>
 
           <div className="form-actions">
@@ -438,7 +429,7 @@ const QuestionView = () => {
                     className="question-content"
                     style={{ marginTop: "12px" }}
                   >
-                    <p>{question.content}</p>
+                    <p><MathTextDisplay text={question.content} /></p>
                     {question.imageUrl && (
                       <div className="question-image-display">
                         <img 
@@ -451,19 +442,27 @@ const QuestionView = () => {
                   <div className="question-options">
                     <div className="option">
                       <span className="option-label">A.</span>
-                      <span className="option-text">{question.optionA}</span>
+                      <span className="option-text">
+                        <MathTextDisplay text={question.optionA} />
+                      </span>
                     </div>
                     <div className="option">
                       <span className="option-label">B.</span>
-                      <span className="option-text">{question.optionB}</span>
+                      <span className="option-text">
+                        <MathTextDisplay text={question.optionB} />
+                      </span>
                     </div>
                     <div className="option">
                       <span className="option-label">C.</span>
-                      <span className="option-text">{question.optionC}</span>
+                      <span className="option-text">
+                        <MathTextDisplay text={question.optionC} />
+                      </span>
                     </div>
                     <div className="option">
                       <span className="option-label">D.</span>
-                      <span className="option-text">{question.optionD}</span>
+                      <span className="option-text">
+                        <MathTextDisplay text={question.optionD} />
+                      </span>
                     </div>
                   </div>
                   <div className="question-answer">
@@ -489,7 +488,7 @@ const QuestionView = () => {
                         💡 Giải thích:
                       </strong>
                       <p style={{ margin: "8px 0 0 0", lineHeight: "1.5" }}>
-                        {question.explanation}
+                        <MathTextDisplay text={question.explanation} />
                       </p>
                     </div>
                   )}

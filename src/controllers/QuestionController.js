@@ -12,6 +12,7 @@ class QuestionController {
     this.highlightedQuestionId = null;
     this.filterSubjectId = "";
     this.uploadingImage = false;
+    this.resetHelpers = false;
     this.formData = {
       content: "",
       optionA: "",
@@ -48,6 +49,7 @@ class QuestionController {
         highlightedQuestionId: this.highlightedQuestionId,
         filterSubjectId: this.filterSubjectId,
         uploadingImage: this.uploadingImage,
+        resetHelpers: this.resetHelpers,
         formData: this.formData,
         showSubjectPopup: this.showSubjectPopup,
       });
@@ -149,6 +151,14 @@ class QuestionController {
       }
 
       this.resetForm();
+      // Reset all helpers after successful submission
+      this.resetHelpers = true;
+      this.notifyUpdate();
+      // Reset the flag after a short delay
+      setTimeout(() => {
+        this.resetHelpers = false;
+        this.notifyUpdate();
+      }, 100);
     } catch (error) {
       console.error("Error processing question:", error);
       this.error = this.editingId
