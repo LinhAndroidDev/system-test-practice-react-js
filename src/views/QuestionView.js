@@ -13,6 +13,7 @@ const QuestionView = () => {
     editingId: null,
     highlightedQuestionId: null,
     filterSubjectId: "",
+    uploadingImage: false,
     formData: {
       content: "",
       optionA: "",
@@ -21,6 +22,7 @@ const QuestionView = () => {
       optionD: "",
       correctAnswer: "",
       explanation: "",
+      imageUrl: "",
       subjectId: null,
       subjectName: "",
     },
@@ -77,6 +79,17 @@ const QuestionView = () => {
 
   const getCorrectAnswerText = (correctAnswer) => {
     return controller.getCorrectAnswerText(correctAnswer);
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      controller.handleImageUpload(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    controller.handleRemoveImage();
   };
 
   return (
@@ -136,6 +149,59 @@ const QuestionView = () => {
               rows="3"
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label>Hình ảnh cho câu hỏi (tùy chọn):</label>
+            <div className="image-upload-wrapper">
+              {state.formData.imageUrl ? (
+                <div className="image-preview-card">
+                  <img 
+                    src={state.formData.imageUrl} 
+                    alt="Question" 
+                    className="uploaded-image"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="btn-remove-image"
+                    title="Xóa hình ảnh"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div className="image-upload-zone">
+                  <input
+                    type="file"
+                    id="imageUpload"
+                    accept="image/jpeg,image/jpg,image/png,image/gif"
+                    onChange={handleImageUpload}
+                    disabled={state.uploadingImage}
+                    className="image-input-hidden"
+                  />
+                  <label 
+                    htmlFor="imageUpload" 
+                    className={`image-upload-label ${state.uploadingImage ? 'uploading' : ''}`}
+                  >
+                    {state.uploadingImage ? (
+                      <>
+                        <div className="upload-spinner"></div>
+                        <span>Đang tải lên...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <span className="upload-text-main">Tải lên hình ảnh</span>
+                        <span className="upload-text-sub">JPG, PNG, GIF - Tối đa 5MB</span>
+                      </>
+                    )}
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
 
           <div
@@ -374,6 +440,14 @@ const QuestionView = () => {
                     style={{ marginTop: "12px" }}
                   >
                     <p>{question.content}</p>
+                    {question.imageUrl && (
+                      <div className="question-image-display">
+                        <img 
+                          src={question.imageUrl} 
+                          alt="Question illustration" 
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="question-options">
                     <div className="option">

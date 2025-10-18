@@ -1,5 +1,6 @@
 import QuestionService from "../services/QuestionService.js";
 import SubjectService from "../services/SubjectService.js";
+import UploadService from "../services/UploadService.js";
 
 class QuestionController {
   constructor() {
@@ -10,6 +11,7 @@ class QuestionController {
     this.editingId = null;
     this.highlightedQuestionId = null;
     this.filterSubjectId = "";
+    this.uploadingImage = false;
     this.formData = {
       content: "",
       optionA: "",
@@ -18,6 +20,7 @@ class QuestionController {
       optionD: "",
       correctAnswer: "",
       explanation: "",
+      imageUrl: "",
       subjectId: null,
       subjectName: "",
     };
@@ -25,6 +28,7 @@ class QuestionController {
     this.callbacks = {};
     this.questionService = new QuestionService();
     this.subjectService = new SubjectService();
+    this.uploadService = new UploadService();
   }
 
   // Register callbacks for UI updates
@@ -43,6 +47,7 @@ class QuestionController {
         editingId: this.editingId,
         highlightedQuestionId: this.highlightedQuestionId,
         filterSubjectId: this.filterSubjectId,
+        uploadingImage: this.uploadingImage,
         formData: this.formData,
         showSubjectPopup: this.showSubjectPopup,
       });
@@ -114,6 +119,7 @@ class QuestionController {
         optionD: this.formData.optionD,
         correctAnswer: this.formData.correctAnswer,
         explanation: this.formData.explanation || "",
+        imageUrl: this.formData.imageUrl || "",
         subjectId: this.formData.subjectId,
         subjectName: this.formData.subjectName,
       };
@@ -158,6 +164,7 @@ class QuestionController {
       optionD: question.optionD,
       correctAnswer: question.correctAnswer,
       explanation: question.explanation || "",
+      imageUrl: question.imageUrl || "",
       subjectId: question.subjectId,
       subjectName: question.subjectName,
     };
@@ -202,8 +209,46 @@ class QuestionController {
       optionD: "",
       correctAnswer: "",
       explanation: "",
+      imageUrl: "",
       subjectId: null,
       subjectName: "",
+    };
+    this.notifyUpdate();
+  }
+
+  // Handle image upload
+  async handleImageUpload(file) {
+    const validation = this.uploadService.validateImage(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+
+    this.uploadingImage = true;
+    this.error = null;
+    this.notifyUpdate();
+
+    try {
+      const imageUrl = await this.uploadService.uploadImage(file);
+      this.formData = {
+        ...this.formData,
+        imageUrl: imageUrl,
+      };
+      this.error = null;
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      this.error = "Không thể tải lên hình ảnh. Vui lòng thử lại.";
+    } finally {
+      this.uploadingImage = false;
+      this.notifyUpdate();
+    }
+  }
+
+  // Handle remove image
+  handleRemoveImage() {
+    this.formData = {
+      ...this.formData,
+      imageUrl: "",
     };
     this.notifyUpdate();
   }
