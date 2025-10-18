@@ -31,7 +31,8 @@ function MainApp() {
   const handleLogout = () => {
     if (window.confirm("Bạn có chắc chắn muốn đăng xuất?")) {
       logout();
-      navigate("/login");
+      // Force reload after logout to ensure clean state
+      window.location.href = "/login";
     }
   };
 
@@ -106,7 +107,8 @@ function App() {
       <Route path="/register" element={<RegisterView />} />
       <Route path="/test-register" element={<TestRegisterAPI />} />
       <Route path="/test-login" element={<TestLoginAPI />} />
-      <Route path="/*" element={<MainApp />} />
+      <Route path="/" element={<MainApp />} />
+      <Route path="*" element={<MainApp />} />
     </Routes>
   );
 }

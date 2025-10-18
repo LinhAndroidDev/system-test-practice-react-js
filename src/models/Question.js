@@ -65,7 +65,7 @@ class Question {
 
   // Validation
   isValid() {
-    return this.content && 
+    return (this.content || this.imageUrl) && // Must have content OR image
            this.optionA && 
            this.optionB && 
            this.optionC && 

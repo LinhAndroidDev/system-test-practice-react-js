@@ -99,8 +99,15 @@ class QuestionController {
 
   // Handle form submission
   async handleSubmit() {
-    if (!this.formData.content || !this.formData.subjectId) {
-      alert("Vui lòng điền đầy đủ thông tin!");
+    // Validate: must have either content or image
+    if (!this.formData.content && !this.formData.imageUrl) {
+      alert("Vui lòng nhập nội dung câu hỏi hoặc thêm hình ảnh!");
+      return;
+    }
+
+    // Validate: must have subject
+    if (!this.formData.subjectId) {
+      alert("Vui lòng chọn chủ đề!");
       return;
     }
 

@@ -145,14 +145,13 @@ const QuestionView = () => {
               name="content"
               value={state.formData.content}
               onChange={handleInputChange}
-              placeholder="Nhập nội dung câu hỏi"
+              placeholder="Nhập nội dung câu hỏi (bắt buộc nếu không có hình ảnh)"
               rows="3"
-              required
             />
           </div>
 
           <div className="form-group">
-            <label>Hình ảnh cho câu hỏi (tùy chọn):</label>
+            <label>Hình ảnh cho câu hỏi (tùy chọn nếu có nội dung):</label>
             <div className="image-upload-wrapper">
               {state.formData.imageUrl ? (
                 <div className="image-preview-card">
