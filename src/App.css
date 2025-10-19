@@ -1097,7 +1097,7 @@ select:disabled {
 
 /* Image in Question Card */
 .question-image-display {
-  margin: 1rem 0;
+  margin: 0;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid #e2e8f0;

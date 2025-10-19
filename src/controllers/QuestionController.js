@@ -12,6 +12,7 @@ class QuestionController {
     this.highlightedQuestionId = null;
     this.filterSubjectId = "";
     this.uploadingImage = false;
+    this.uploadingExplanationImage = false;
     this.resetHelpers = false;
     this.formData = {
       content: "",
@@ -22,6 +23,7 @@ class QuestionController {
       correctAnswer: "",
       explanation: "",
       imageUrl: "",
+      explanationImageUrl: "",
       subjectId: null,
       subjectName: "",
     };
@@ -49,6 +51,7 @@ class QuestionController {
         highlightedQuestionId: this.highlightedQuestionId,
         filterSubjectId: this.filterSubjectId,
         uploadingImage: this.uploadingImage,
+        uploadingExplanationImage: this.uploadingExplanationImage,
         resetHelpers: this.resetHelpers,
         formData: this.formData,
         showSubjectPopup: this.showSubjectPopup,
@@ -129,6 +132,7 @@ class QuestionController {
         correctAnswer: this.formData.correctAnswer,
         explanation: this.formData.explanation || "",
         imageUrl: this.formData.imageUrl || "",
+        explanationImageUrl: this.formData.explanationImageUrl || "",
         subjectId: this.formData.subjectId,
         subjectName: this.formData.subjectName,
       };
@@ -182,6 +186,7 @@ class QuestionController {
       correctAnswer: question.correctAnswer,
       explanation: question.explanation || "",
       imageUrl: question.imageUrl || "",
+      explanationImageUrl: question.explanationImageUrl || "",
       subjectId: question.subjectId,
       subjectName: question.subjectName,
     };
@@ -227,6 +232,7 @@ class QuestionController {
       correctAnswer: "",
       explanation: "",
       imageUrl: "",
+      explanationImageUrl: "",
       subjectId: null,
       subjectName: "",
     };
@@ -266,6 +272,43 @@ class QuestionController {
     this.formData = {
       ...this.formData,
       imageUrl: "",
+    };
+    this.notifyUpdate();
+  }
+
+  // Handle explanation image upload
+  async handleExplanationImageUpload(file) {
+    const validation = this.uploadService.validateImage(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      return;
+    }
+
+    this.uploadingExplanationImage = true;
+    this.error = null;
+    this.notifyUpdate();
+
+    try {
+      const imageUrl = await this.uploadService.uploadImage(file);
+      this.formData = {
+        ...this.formData,
+        explanationImageUrl: imageUrl,
+      };
+      this.error = null;
+    } catch (error) {
+      console.error("Error uploading explanation image:", error);
+      this.error = "Không thể tải lên hình ảnh giải thích. Vui lòng thử lại.";
+    } finally {
+      this.uploadingExplanationImage = false;
+      this.notifyUpdate();
+    }
+  }
+
+  // Handle remove explanation image
+  handleRemoveExplanationImage() {
+    this.formData = {
+      ...this.formData,
+      explanationImageUrl: "",
     };
     this.notifyUpdate();
   }

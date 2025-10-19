@@ -1,5 +1,5 @@
 class Question {
-  constructor(id, content, optionA, optionB, optionC, optionD, correctAnswer, subjectId, subjectName, explanation = "", imageUrl = "") {
+  constructor(id, content, optionA, optionB, optionC, optionD, correctAnswer, subjectId, subjectName, explanation = "", imageUrl = "", explanationImageUrl = "") {
     this.id = id;
     this.content = content;
     this.optionA = optionA;
@@ -11,6 +11,7 @@ class Question {
     this.subjectName = subjectName;
     this.explanation = explanation;
     this.imageUrl = imageUrl;
+    this.explanationImageUrl = explanationImageUrl;
   }
 
   // Static method to create from API response
@@ -35,7 +36,8 @@ class Question {
       subjectId,
       subjectName,
       apiData.explanation === null ? "" : (apiData.explanation || ""),
-      apiData.contentImage || ""
+      apiData.contentImage || "",
+      apiData.explanationImage || ""
     );
   }
 
@@ -59,7 +61,8 @@ class Question {
       correctAnswer: correctAnswer,
       subjectId: this.subjectId,
       subjectName: this.subjectName,
-      explanation: this.explanation
+      explanation: this.explanation,
+      explanationImage: this.explanationImageUrl  // Send as explanationImage to API
     };
   }
 
@@ -93,7 +96,8 @@ class Question {
       this.subjectId,
       this.subjectName,
       this.explanation,
-      this.imageUrl
+      this.imageUrl,
+      this.explanationImageUrl
     );
   }
 }
