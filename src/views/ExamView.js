@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ExamController from '../controllers/ExamController.js';
 import { useAuth } from "../contexts/AuthContext";
+import MathTextDisplay from "../components/MathTextDisplay";
 
 const ExamView = () => {
   const { isAuthenticated } = useAuth();
@@ -359,12 +360,12 @@ const ExamView = () => {
                           />
                         </div>
                         <div className="question-content">
-                          <p>{question.content}</p>
+                          <p><MathTextDisplay text={question.content} /></p>
                           <div className="question-options-preview">
-                            <span>A. {question.optionA}</span>
-                            <span>B. {question.optionB}</span>
-                            <span>C. {question.optionC}</span>
-                            <span>D. {question.optionD}</span>
+                            <span>A. <MathTextDisplay text={question.optionA} /></span>
+                            <span>B. <MathTextDisplay text={question.optionB} /></span>
+                            <span>C. <MathTextDisplay text={question.optionC} /></span>
+                            <span>D. <MathTextDisplay text={question.optionD} /></span>
                           </div>
                         </div>
                       </div>
