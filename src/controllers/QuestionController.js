@@ -13,7 +13,11 @@ class QuestionController {
     this.filterSubjectId = "";
     this.uploadingImage = false;
     this.uploadingExplanationImage = false;
+    this.deletingImage = false;
+    this.deletingExplanationImage = false;
     this.resetHelpers = false;
+    this.originalImageUrl = "";
+    this.originalExplanationImageUrl = "";
     this.formData = {
       content: "",
       optionA: "",
@@ -52,7 +56,11 @@ class QuestionController {
         filterSubjectId: this.filterSubjectId,
         uploadingImage: this.uploadingImage,
         uploadingExplanationImage: this.uploadingExplanationImage,
+        deletingImage: this.deletingImage,
+        deletingExplanationImage: this.deletingExplanationImage,
         resetHelpers: this.resetHelpers,
+        originalImageUrl: this.originalImageUrl,
+        originalExplanationImageUrl: this.originalExplanationImageUrl,
         formData: this.formData,
         showSubjectPopup: this.showSubjectPopup,
       });
@@ -177,6 +185,8 @@ class QuestionController {
   // Handle edit question
   handleEditQuestion(question) {
     this.editingId = question.id;
+    this.originalImageUrl = question.imageUrl || "";
+    this.originalExplanationImageUrl = question.explanationImageUrl || "";
     this.formData = {
       content: question.content,
       optionA: question.optionA,
@@ -223,6 +233,8 @@ class QuestionController {
 
   // Reset form
   resetForm() {
+    this.originalImageUrl = "";
+    this.originalExplanationImageUrl = "";
     this.formData = {
       content: "",
       optionA: "",
@@ -268,12 +280,44 @@ class QuestionController {
   }
 
   // Handle remove image
-  handleRemoveImage() {
-    this.formData = {
-      ...this.formData,
-      imageUrl: "",
-    };
+  async handleRemoveImage() {
+    this.deletingImage = true;
+    this.error = null;
     this.notifyUpdate();
+
+    try {
+      // If there's an image, delete it from server
+      if (this.formData.imageUrl) {
+        // If editing and current image is same as original, don't delete (it's still used in database)
+        if (this.editingId && this.formData.imageUrl === this.originalImageUrl) {
+          console.log("Skipping delete - image is original and still used in database");
+        } else {
+          // Delete image (either new upload during edit, or any upload during create)
+          try {
+            // Extract filename from URL
+            const urlParts = this.formData.imageUrl.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            
+            await this.uploadService.deleteImage(fileName);
+            console.log("Deleted image:", fileName);
+          } catch (error) {
+            console.error("Error deleting image:", error);
+            // Continue with removal even if delete fails
+          }
+        }
+      }
+      
+      this.formData = {
+        ...this.formData,
+        imageUrl: "",
+      };
+    } catch (error) {
+      console.error("Error in handleRemoveImage:", error);
+      this.error = "Không thể xóa ảnh. Vui lòng thử lại.";
+    } finally {
+      this.deletingImage = false;
+      this.notifyUpdate();
+    }
   }
 
   // Handle explanation image upload
@@ -305,12 +349,44 @@ class QuestionController {
   }
 
   // Handle remove explanation image
-  handleRemoveExplanationImage() {
-    this.formData = {
-      ...this.formData,
-      explanationImageUrl: "",
-    };
+  async handleRemoveExplanationImage() {
+    this.deletingExplanationImage = true;
+    this.error = null;
     this.notifyUpdate();
+
+    try {
+      // If there's an explanation image, delete it from server
+      if (this.formData.explanationImageUrl) {
+        // If editing and current image is same as original, don't delete (it's still used in database)
+        if (this.editingId && this.formData.explanationImageUrl === this.originalExplanationImageUrl) {
+          console.log("Skipping delete - explanation image is original and still used in database");
+        } else {
+          // Delete image (either new upload during edit, or any upload during create)
+          try {
+            // Extract filename from URL
+            const urlParts = this.formData.explanationImageUrl.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            
+            await this.uploadService.deleteImage(fileName);
+            console.log("Deleted explanation image:", fileName);
+          } catch (error) {
+            console.error("Error deleting explanation image:", error);
+            // Continue with removal even if delete fails
+          }
+        }
+      }
+      
+      this.formData = {
+        ...this.formData,
+        explanationImageUrl: "",
+      };
+    } catch (error) {
+      console.error("Error in handleRemoveExplanationImage:", error);
+      this.error = "Không thể xóa ảnh giải thích. Vui lòng thử lại.";
+    } finally {
+      this.deletingExplanationImage = false;
+      this.notifyUpdate();
+    }
   }
 
   // Handle subject popup

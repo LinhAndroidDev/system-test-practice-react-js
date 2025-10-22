@@ -92,8 +92,8 @@ const QuestionView = () => {
     }
   };
 
-  const handleRemoveImage = () => {
-    controller.handleRemoveImage();
+  const handleRemoveImage = async () => {
+    await controller.handleRemoveImage();
   };
 
   const handleExplanationImageUpload = (e) => {
@@ -103,8 +103,8 @@ const QuestionView = () => {
     }
   };
 
-  const handleRemoveExplanationImage = () => {
-    controller.handleRemoveExplanationImage();
+  const handleRemoveExplanationImage = async () => {
+    await controller.handleRemoveExplanationImage();
   };
 
   return (
@@ -179,8 +179,13 @@ const QuestionView = () => {
                     onClick={handleRemoveImage}
                     className="btn-remove-image"
                     title="Xóa hình ảnh"
+                    disabled={state.deletingImage}
                   >
-                    ✕
+                    {state.deletingImage ? (
+                      <div className="upload-spinner"></div>
+                    ) : (
+                      '✕'
+                    )}
                   </button>
                 </div>
               ) : (
@@ -350,8 +355,13 @@ const QuestionView = () => {
                     onClick={handleRemoveExplanationImage}
                     className="btn-remove-image"
                     title="Xóa hình ảnh"
+                    disabled={state.deletingExplanationImage}
                   >
-                    ✕
+                    {state.deletingExplanationImage ? (
+                      <div className="upload-spinner"></div>
+                    ) : (
+                      '✕'
+                    )}
                   </button>
                 </div>
               ) : (

@@ -1034,6 +1034,16 @@ select:disabled {
   margin-bottom: 1rem;
 }
 
+/* Small Loading Spinner for Delete Button */
+.btn-remove-image .upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  margin: 0;
+  animation: spin 0.6s linear infinite;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
@@ -1084,11 +1094,19 @@ select:disabled {
   opacity: 0.85;
 }
 
-.btn-remove-image:hover {
+.btn-remove-image:hover:not(:disabled) {
   background: #dc3545;
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.5);
   opacity: 1;
+}
+
+.btn-remove-image:disabled {
+  background: rgba(220, 53, 69, 0.6);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.8;
 }
 
 .btn-remove-image:active {

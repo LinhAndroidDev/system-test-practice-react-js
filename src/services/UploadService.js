@@ -47,6 +47,30 @@ class UploadService {
     return `${this.baseUrl}/image/${filename}`;
   }
 
+  // Delete image
+  async deleteImage(fileName) {
+    try {
+      const response = await fetch(`${this.baseUrl}/image?fileName=${encodeURIComponent(fileName)}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Delete failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.status === 200) {
+        return result;
+      } else {
+        throw new Error(result.message || 'Failed to delete image');
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      throw error;
+    }
+  }
+
   // Validate image file
   validateImage(file) {
     const maxSize = 5 * 1024 * 1024; // 5MB
